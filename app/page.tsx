@@ -2,7 +2,7 @@ import NavbarAdmin from "./components/Navbar";
 import AddButton from "./components/AddButton";
 import Header from "./components/Header";
 import TableOwner from "./components/TableOwner";
-import TableApartament from "./components/TableApartament";
+import TableApartament from "./components/TableProperties.jsx";
 import TablePayments from "./components/TablePayments";
 import TableGuard from "./components/TableGuard";
 

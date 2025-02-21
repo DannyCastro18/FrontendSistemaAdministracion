@@ -26,4 +26,5 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: "Poppins", Helvetica, sans-serif;
+  box-sizing: border-box;
 }
