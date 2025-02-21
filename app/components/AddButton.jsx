@@ -1,4 +1,4 @@
-const BotonAgregar = () => {
+const AddButton = () => {
 
     return (
         <div className='fixed right-4 bottom-4'>
@@ -11,4 +11,4 @@ const BotonAgregar = () => {
     )
 }
 
-export default BotonAgregar;
+export default AddButton;
