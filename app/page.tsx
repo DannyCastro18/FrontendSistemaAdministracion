@@ -1,6 +1,7 @@
 import NavbarAdmin from "./components/Navbar";
 import BotonAgregar from "./components/BotonAgregar";
 import Header from "./components/Header";
+import TableOwner from "./components/TableOwner";
 
 export default function dashboard() {
   return (
@@ -8,6 +9,7 @@ export default function dashboard() {
       <Header />
       <NavbarAdmin />
       <BotonAgregar />
+      <TableOwner/>
     </div>
   );
 }
