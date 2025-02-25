@@ -4,7 +4,7 @@ export default function Layout({ children }) {
     return (
       <div className="flex flex-col h-screen">
         <Header />
-        <section className="flex h-full w-full">
+        <section className="flex h-full w-full p-4">
             <NavbarAdmin />
             {children}
         </section>

@@ -1,17 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import AddButton from "./AddButton";
 import axios from "axios";
-
-interface Propietario {
-  id: number;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  telefono: string;
-  apartamento: string;
-  pagos: number;
-}
 
 export default function Propietarios() {
   const [propietarios, setPropietarios] = useState<Propietario[]>([]);
@@ -20,9 +11,7 @@ export default function Propietarios() {
     axios
       .get("http://localhost:5000/api/propietarios/ver") // Reemplaza con tu API
       .then((response) => setPropietarios(response.data))
-      .catch((error) =>
-        console.error("Error al obtener propietarios:", error)
-      );
+      .catch((error) => console.error("Error al obtener propietarios:", error));
   }, []);
 
   return (
