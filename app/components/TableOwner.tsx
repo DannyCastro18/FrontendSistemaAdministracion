@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AddButton from './AddButton';
 import axios from "axios";
 
 interface Propietario {
@@ -18,7 +19,7 @@ export default function Propietarios() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/propietarios/ver") // Reemplaza con tu API
+      .get("http://localhost:5000/api/propietarios/ver") 
       .then((response) => setPropietarios(response.data))
       .catch((error) =>
         console.error("Error al obtener propietarios:", error)
