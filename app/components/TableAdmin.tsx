@@ -99,7 +99,7 @@ const TableAdmin = () => {
                             <>
                                 <input type="text" name="userName" value={usuarioEdit.userName} onChange={handleEdit} className="text-black" />
                                 <select name="rol" value={usuarioEdit.rol} onChange={handleEdit} className="text-black">
-                                    <option value="admin">Admin</option>
+                                    <option value="administrador">Administrador</option>
                                     <option value="guardia">Guardia</option>
                                 </select>
                                 <select name="estado" value={usuarioEdit.estado} onChange={handleEdit} className="text-black">
