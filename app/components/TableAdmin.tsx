@@ -31,7 +31,7 @@ const TableAdmin = () => {
 
     const activateEdit = (usuario:Usuario) => {
         setEditandoId(usuario.id);
-        setUsuarioEdit(usuario);
+        setUsuarioEdit({...usuario});
     }
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,9 +45,10 @@ const TableAdmin = () => {
         console.log("Enviando datos editados:", usuarioEdit);
         try {
             const res = await axios.put(`http://localhost:5000/api/usuario/actualizar/${id}`, usuarioEdit);
-            console.log("Respuesta del servidor:", res.data);
-            setUsers(users.map((user) => user.id === id ? res.data : user));
+            const updatedUser = res.data;
+            setUsers(users.map((user) => user.id === id ? updatedUser : user));
             setEditandoId(null);
+            setUsuarioEdit(null);
         } catch (error) {
             console.error("Error al editar Usuario", error)
             alert("Error al editar Usuario")

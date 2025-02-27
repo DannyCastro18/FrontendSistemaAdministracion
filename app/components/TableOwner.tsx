@@ -4,14 +4,25 @@ import { useEffect, useState } from "react";
 import AddButton from './AddButton';
 import axios from "axios";
 
+interface Pago {
+  id: number;
+  monto: string;
+  tipo: string;
+}
+
+interface Apartamento {
+  id: number;
+  numero: number;
+}
+
 interface Propietario {
   id: number;
   nombre: string;
   apellido: string;
   correo: string;
   telefono: string;
-  apartamento: string;
-  pagos: number;
+  apartamentos: Apartamento[];
+  pagos: Pago[];
 }
 
 export default function Propietarios() {
@@ -19,7 +30,7 @@ export default function Propietarios() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/propietarios/ver")
+      .get("http://localhost:5000/api/propietario/ver")
       .then((response) => setPropietarios(response.data))
       .catch((error) => console.error("Error al obtener propietarios:", error));
   }, []);
@@ -46,10 +57,22 @@ export default function Propietarios() {
           <div>{prop.apellido}</div>
           <div>{prop.correo}</div>
           <div>{prop.telefono}</div>
-          <div>{prop.apartamento}</div>
-          <div>{prop.pagos}</div>
+          <div>
+            {prop.apartamentos.map((apto) => (
+              <div key={apto.id}>#{apto.numero}</div>
+            ))}
+          </div>
+          <div>
+            {prop.pagos.map((pago) => (
+              <div key={pago.id}>
+                {pago.tipo} - {pago.monto}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
+
+      <AddButton onClick={() => {console.log("sapo")}}/>
     </div>
   );
 }
