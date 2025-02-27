@@ -3,7 +3,7 @@ import Link from 'next/link';
 const NavbarAdmin = () => {
 
     return (
-            <nav className='flex flex-col justify-bettween items-center rounded-full group-hover:items-baseline group-hover:pl-4 w-16 py-8 bg-black  mr-3 p-1.5 h-full justify-center'>
+            <nav className='flex flex-col justify-bettween items-center rounded-full group-hover:items-baseline group-hover:pl-4 w-16 py-8 bg-black  m-3 p-1.5 justify-center'>
                 <ul className='flex gap-2 flex-col justify-center items-center py-2'>
                     <li className='w-fit h-12 flex hover:bg-yellow-500 rounded justify-center items-center group-hover:w-full gap-4'>
                         <Link href={'/admin/dashboard'}>

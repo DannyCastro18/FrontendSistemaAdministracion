@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import AddButton from './AddButton';
+import AddButton from './AddButton';    
 import axios from 'axios';
 
 type Usuario = {
     id: number;
     userName: string;
-    rol: "admin" | "guardia";
+    rol: "administrador" | "guardia";
     estado: "activo" | "inactivo";
     correo: string;
+    password: string;
 };
 
 const TableAdmin = () => {
@@ -55,13 +56,20 @@ const TableAdmin = () => {
 
     const addUser = async () => {
         try {
-            await axios.post("http://localhost:5000/api/usuario/registrar");
-            const res = await axios.get("http://localhost:5000/api/usuarios/ver");
+            const newUser = {
+                userName: "Nuevo Usuario",
+                password: "123",
+                rol: "administrador",
+                estado: "activo",
+                correo: "nuevo@correo.com"
+        };
+            await axios.post("http://localhost:5000/api/usuario/registrar", newUser);
+            const res = await axios.get("http://localhost:5000/api/usuario/ver");
             setUsers(res.data as Usuario[]);
         } catch (error) {
             console.error("Error al agregar usuario:", error);
         }
-    }
+    };
 
     const deleteUser = async (id: number) => {
         try {
@@ -74,17 +82,18 @@ const TableAdmin = () => {
 
     return (
         <div>
-            <div className="text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
+            <div className="text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
                 <div>Id</div>
                 <div>Nombre</div>
                 <div>Rol</div>
                 <div>Estado</div>
                 <div>Correo</div>
+                <div>Contraseña</div>
                 <div>Funciones</div>
             </div>
             <div>
                 {users.map((user, index) => (
-                    <div key={user.id ?? `user-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
+                    <div key={user.id ?? `user-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
                         <div>{user.id}</div>
                         {editandoId === user.id && usuarioEdit ? (
                             <>
@@ -98,6 +107,7 @@ const TableAdmin = () => {
                                     <option value="inactivo">Inactivo</option>
                                 </select>
                                 <input type="email" name="correo" value={usuarioEdit.correo} onChange={handleEdit} className="text-black" />
+                                <input type="password" name="password" value={usuarioEdit.password} onChange={handleEdit} className="text-black" />
                                 <button onClick={() => editUser(user.id)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
                                         <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
@@ -110,6 +120,7 @@ const TableAdmin = () => {
                                 <div>{user.rol}</div>
                                 <div className={user.estado === "activo" ? "text-green-600" : "text-red-600"}>{user.estado}</div>
                                 <div>{user.correo}</div>
+                                <div>{user.password}</div>
                                 <div>
                                     <button onClick={() => deleteUser(user.id)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
