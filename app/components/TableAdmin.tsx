@@ -45,8 +45,11 @@ const TableAdmin = () => {
         console.log("Enviando datos editados:", usuarioEdit);
         try {
             const res = await axios.put(`http://localhost:5000/api/usuario/actualizar/${id}`, usuarioEdit);
+            console.log("Respuesta del servidor:", res.data);
+            
             const updatedUser = res.data;
             setUsers(users.map((user) => user.id === id ? updatedUser : user));
+            
             setEditandoId(null);
             setUsuarioEdit(null);
         } catch (error) {
@@ -63,7 +66,7 @@ const TableAdmin = () => {
                 rol: "administrador",
                 estado: "activo",
                 correo: "nuevo@correo.com"
-        };
+            };
             await axios.post("http://localhost:5000/api/usuario/registrar", newUser);
             const res = await axios.get("http://localhost:5000/api/usuario/ver");
             setUsers(res.data as Usuario[]);
