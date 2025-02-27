@@ -21,6 +21,7 @@ interface Propietario {
   apellido: string;
   correo: string;
   telefono: string;
+  admin_id: number;
   apartamentos: Apartamento[];
   pagos: Pago[];
 }
@@ -28,59 +29,45 @@ interface Propietario {
 export default function Propietarios() {
   const [propietarios, setPropietarios] = useState<Propietario[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
-  const [propEdit, setPropEdit] = useState<Propietario|null>(null);
-
-  const fetchPropietarios = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/propietario/ver");
-      setPropietarios(response.data);
-    } catch (error) {
-      console.error("Error al obtener propietarios:", error);
-    }
-  };
-
+  const [propEdit, setPropEdit] = useState<Propietario | null>(null);
   useEffect(() => {
+    const fetchPropietarios = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/propietario/ver");
+        setPropietarios(response.data);
+      } catch (error) {
+        console.error("Error al obtener propietarios:", error);
+      }
+    };
     fetchPropietarios();
   }, []);
 
   const activateEdit = (propietario: Propietario) => {
     setEditandoId(propietario.id);
-    setPropEdit({...propietario});
+    setPropEdit({ ...propietario });
   };
 
   const handleEdit = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!propEdit) return;
-    setPropEdit({ ...propEdit, [e.target.name]: e.target.value });
+    setPropEdit(prev => prev ? { ...prev, [e.target.name]: e.target.value } : null);
   };
 
   const editOwner = async (id: number) => {
     if (!propEdit) return;
-
-    console.log("Enviando datos editados:", propEdit);
     try {
       const res = await axios.put(`http://localhost:5000/api/propietario/actualizar/${id}`, propEdit);
-      console.log("Respuesta del servidor:", res.data);
-      
-      // Actualizar inmediatamente la interfaz con los datos editados
-      setPropietarios(prevProps => 
-        prevProps.map(prop => 
-          prop.id === id ? {...propEdit} : prop
-        )
-      );
-      
-      // Limpiar estado de edición
+      setPropietarios(prev => prev.map(prop => (prop.id === id ? { ...prop, ...res.data } : prop)));
       setEditandoId(null);
       setPropEdit(null);
     } catch (error) {
-      console.error("Error al editar propietario", error);
-      alert("Error al editar propietario");
+      console.error("Error al obtener propietarios:", (error as Error).message);
     }
   };
 
   const deleteOwner = async (id: number) => {
     try {
       await axios.delete(`http://localhost:5000/api/propietario/eliminar/${id}`);
-      setPropietarios(propietarios.filter(propietario => propietario.id !== id));
+      setPropietarios(prev => prev.filter(prop => prop.id !== id));
     } catch (error) {
       console.error("Error al eliminar propietario:", error);
     }
@@ -88,20 +75,20 @@ export default function Propietarios() {
 
   const addOwner = async () => {
     try {
-      const newOwner = {
-        nombre: "Nuevo",
-        apellido: "Propietario",
-        correo: "nuevo@email.com",
-        telefono: "12345678",
-        apartamentos: [],
-        pagos: []
-      };
-      await axios.post("http://localhost:5000/api/propietario/registrar", newOwner);
-      await fetchPropietarios(); // Refrescar lista completa
+        const newUser = {
+            nombre: "Nuevo",
+            apellido: "Vecino 🤠",
+            correo: "vecino@nuevo.com",
+            telefono: "3000000000",
+            admin_id: 2
+        };
+        await axios.post("http://localhost:5000/api/propietario/registrar", newUser);
+        const res = await axios.get("http://localhost:5000/api/usuario/ver");
+        setPropietarios(res.data as Propietario[]);
     } catch (error) {
-      console.error("Error al agregar propietario:", error);
+        console.error("Error al agregar usuario:", error);
     }
-  };
+};
 
   return (
     <div className="p-4">
@@ -115,59 +102,28 @@ export default function Propietarios() {
         <div>Pagos</div>
         <div>Funciones</div>
       </div>
+
       {propietarios.map((prop) => (
         <div
           key={prop.id}
           className="text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center"
         >
-          <div >{prop.id}</div>
+          <div>{prop.id}</div>
           {editandoId === prop.id && propEdit ? (
             <>
-              <input 
-                type="text" 
-                name="nombre" 
-                value={propEdit.nombre} 
-                onChange={handleEdit} 
-                className="text-black px-2 w-40 h-8 py-1 "
-              />
-              <input 
-                type="text" 
-                name="apellido" 
-                value={propEdit.apellido} 
-                onChange={handleEdit} 
-                className="text-black px-2 w-40 h-8 py-1"
-              />
-              <input 
-                type="email" 
-                name="correo" 
-                value={propEdit.correo} 
-                onChange={handleEdit} 
-                className="text-black px-2 w-40 h-8 py-1"
-              />
-              <input 
-                type="text" 
-                name="telefono" 
-                value={propEdit.telefono} 
-                onChange={handleEdit} 
-                className="text-black px-2 w-40 h-8 py-1"
-              />
-              <div>
-                {prop.apartamentos.map((apto) => (
-                  <div key={apto.id}>#{apto.numero}</div>
-                ))}
-              </div>
-              <div>
-                {prop.pagos.map((pago) => (
-                  <div key={pago.id}>
-                    {pago.tipo} - {pago.monto}
-                  </div>
-                ))}
-              </div>
-              <button onClick={() => editOwner(prop.id)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
-                  <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
-                </svg>
-              </button>
+              {["nombre", "apellido", "correo", "telefono"].map((field) => (
+                <input
+                  key={field}
+                  type={field === "correo" ? "email" : "text"}
+                  name={field}
+                  value={propEdit[field as keyof Propietario] as string}
+                  onChange={handleEdit}
+                  className="text-black px-2 w-40 h-8 py-1"
+                />
+              ))}
+              <div>{prop.apartamentos.map((apto) => (<div key={apto.id}>#{apto.numero}</div>))}</div>
+              <div>{prop.pagos.map((pago) => (<div key={pago.id}>{pago.tipo} - {pago.monto}</div>))}</div>
+              <button onClick={() => editOwner(prop.id)}>💾</button>
             </>
           ) : (
             <>
@@ -175,28 +131,18 @@ export default function Propietarios() {
               <div>{prop.apellido}</div>
               <div>{prop.correo}</div>
               <div>{prop.telefono}</div>
-              <div>
-                {prop.apartamentos.map((apto) => (
-                  <div key={apto.id}>#{apto.numero}</div>
-                ))}
-              </div>
-              <div>
-                {prop.pagos.map((pago) => (
-                  <div key={pago.id}>
-                    {pago.tipo} - {pago.monto}
-                  </div>
-                ))}
-              </div>
+              <div>{prop.apartamentos?.map((apto) => (<div key={apto.id}>#{apto.numero}</div>))}</div>
+              <div>{prop.pagos?.map((pago) => (<div key={pago.id}>{pago.tipo} - {pago.monto}</div>))}</div>
               <div>
                 <button onClick={() => deleteOwner(prop.id)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path className='hover:fill-red-500' fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1" />
-                  </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path className='hover:fill-red-500' fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1" />
+                                        </svg>
                 </button>
                 <button onClick={() => activateEdit(prop)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
-                  </svg>
+                                            <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
+                                        </svg>
                 </button>
               </div>
             </>

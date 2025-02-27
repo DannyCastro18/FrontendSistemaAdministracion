@@ -2,9 +2,8 @@ import TableProperties from '@/app/components/TableProperties';
 
 export default function PropertiesPage() {
   return (
-    <>
-      <h1>Properties</h1>
+    <div className='flex flex-col w-full h-full'>
       <TableProperties />
-    </>
+    </div>
   );
 }

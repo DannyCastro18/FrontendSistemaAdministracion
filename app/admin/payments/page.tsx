@@ -2,9 +2,8 @@ import TablePayments from "@/app/components/TablePayments";
 
 export default function PaymentsPage() {
     return (
-        <>
-        <h1>Payments</h1>
+        <div className='flex flex-col w-full h-full'>
             <TablePayments />
-        </>
+        </div>
     );
 }
