@@ -13,12 +13,14 @@ type Apartamento = {
 type Propietario = {
     id: number;
     nombre: string;
+    apellido: string;
 };
 
 const TableProperties = () => {
     const [properties, setProperties] = useState<Apartamento[]>([]);
     const [owners, setOwners] = useState<Propietario[]>([]);
     const [editId, setEditId] = useState<number | null>(null);
+    const [propertiesEdit, setpropertiesEdit] = useState<Apartamento | null>(null);
     const [ownerSelected, setOwnerSelected] = useState<number | null>(null);
 
     useEffect(() => {
@@ -31,6 +33,11 @@ const TableProperties = () => {
             .then((res) => setOwners(res.data))
             .catch((err) => console.error("Error al cargar Propietarios:", err));
     }, []);
+
+    const handleEdit = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        if (!propertiesEdit) return;
+        setpropertiesEdit({ ...propertiesEdit, [e.target.name]: Number(e.target.value) });
+    }
 
     const assignOwner = (apartamentoId: number) => {
         if (!ownerSelected) return;
@@ -57,32 +64,33 @@ const TableProperties = () => {
 
 
     const addProperties = async () => {
-        try{
+        try {
             const newProperty = {
-                numero: 0,
+                numero: 100,
                 propietario_id: null,
             };
             await axios.post("http://localhost:5000/api/apartamento/registrar", newProperty);
             const res = await axios.get("http://localhost:5000/api/apartamento/ver");
             setProperties(res.data as Apartamento[]);
-        }catch (error) {
+        } catch (error) {
             console.error("Error al agregar Apartamento", error);
         }
     };
 
     return (
         <div>
-            <div className="text-white grid grid-cols-[5rem_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
+            <div className="text-white grid grid-cols-[5rem_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
                 <div>Id</div>
                 <div>Número</div>
                 <div>Propietario</div>
+                <div>Funciones</div>
             </div>
             <div>
                 {properties.map((properties, index) => (
-                    <div key={properties.id ?? `properties-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
+                    <div key={properties.id ?? `properties-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
                         <div>{properties.id}</div>
-                        <div>{properties.numero}</div>
                         <div>
+                            <input type="number" name='numero' value={properties.numero} onChange={handleEdit} className="text-black" />
                             {properties.propietario_id ? (
                                 owners.find((owner) => owner.id === properties.propietario_id)?.nombre || "Sin propietario"
                             ) : (
@@ -95,11 +103,16 @@ const TableProperties = () => {
                                                     {owner.nombre}
                                                 </option>))}
                                         </select>
-                                        <button onClick={() => assignOwner(properties.id)}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
-                                                <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
-                                            </svg>
-                                        </button>
+                                        <div>
+                                            <button onClick={() => assignOwner(properties.id)}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
+                                                    <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
+                                                </svg>
+                                            </button>
+                                            <button>
+                                                
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <button onClick={() => setEditId(properties.id)}
@@ -110,7 +123,7 @@ const TableProperties = () => {
                     </div>
                 ))}
             </div>
-            <AddButton onClick={addProperties}/>
+            <AddButton onClick={addProperties} />
         </div>
     )
 }
