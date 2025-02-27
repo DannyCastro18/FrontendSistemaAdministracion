@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-// import { Fredoka, Poppins  } from "next/font/google";
+import { Fredoka, Poppins  } from "next/font/google";
 import "./globals.css";
 
-// const fredoka = Fredoka({
-//   subsets: ["latin"],
-//   weight: ["400", "500", "700"], // Pesos que necesitas
-//   variable: "--font-fredoka",
-// });
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"], // Pesos que necesitas
+  variable: "--font-fredoka",
+});
 
-// const poppins = Poppins({
-//   subsets: ["latin"],
-//   weight: ["400", "600", "700"], 
-//   variable: "--font-poppins",
-// });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"], 
+  variable: "--font-poppins",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        // className={`${fredoka.variable} ${poppins.variable} antialiased`}
+        className={`${fredoka.variable} ${poppins.variable} antialiased`}
       >
         {children}
       </body>

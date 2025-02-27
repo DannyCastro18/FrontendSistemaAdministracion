@@ -1,11 +1,14 @@
-import Link from 'next/link';
+"use client";
+
+import { useRouter } from "next/navigation";
+
 
 function Header() {
-    const router = useRouter();
+    const router = useRouter(); 
 
     const handleLogout = () => {
         localStorage.removeItem("token"); 
-        router.push("/login"); 
+        router.push("/"); 
     };
     return (
         <header className='w-full h-32 flex justify-between items-center p-4 font-fredoka bg-black'>
@@ -15,9 +18,9 @@ function Header() {
             </figure>
             <ul>
                 <li>
-                    <Link h">
+                    <button onClick={handleLogout}>
                     <svg className='w-10 h-10' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12h-9.5m7.5 3l3-3l-3-3m-5-2V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2v-1"/></svg>
-                    </Link>
+                    </button>
                 </li>
             </ul>
         </header>

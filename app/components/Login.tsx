@@ -31,8 +31,8 @@ const Login = () => {
     };
 
     return (
-        <section className="flex h-screen w-screen items-center justify-center bg-gray-900">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
+        <section className="flex h-screen w-screen items-center justify-center bg-[url('https://img.freepik.com/foto-gratis/resumen-rascacielos-ciudad-fondo-blanco_1203-3991.jpg?t=st=1740673917~exp=1740677517~hmac=f45dd56132cdcb6289facff1c9a8b3decd365b489997a15026a4c482dbe895a7&w=1060')] bg-cover bg-center ">
+            <div className="bg-black p-8 rounded-lg shadow-lg w-96">
                 <h1 className="text-2xl font-bold text-white text-center">Login</h1>
                 <form onSubmit={handleSubmit} className="mt-4">
                     <label className="block text-gray-300" htmlFor="correo">
@@ -65,7 +65,7 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all"
+                        className="w-full mt-6 bg-gray-500 hover:bg-yellow-500 text-white py-2 rounded-lg font-semibold transition-all"
                     >
                         Iniciar Sesión
                     </button>
