@@ -76,9 +76,9 @@ export default function Propietarios() {
   const addOwner = async () => {
     try {
         const newUser = {
-            nombre: "Nuevo",
-            apellido: "Vecino 🤠",
-            correo: "vecino@nuevo.com",
+            nombre: "Nuevo propietario",
+            apellido: "Nuevo propietario",
+            correo: "nuevo@gmail.com",
             telefono: "3000000000",
             admin_id: 2
         };

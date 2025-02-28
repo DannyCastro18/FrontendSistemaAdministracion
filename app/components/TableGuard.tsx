@@ -116,7 +116,7 @@ const VisitantesTable = () => {
                 nombre: "Nuevo Visitante",
                 fechaHoraEntrada: currentDate,  
                 apartamento_id:  1,  
-                guardia_id: 23  
+                guardia_id: 24  
             };
             console.log("Datos a enviar:", newVisitante);
             await axios.post("http://localhost:5000/api/visitante/registrar", newVisitante);
