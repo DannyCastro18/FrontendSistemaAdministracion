@@ -4,125 +4,209 @@ import { useState, useEffect } from 'react';
 import AddButton from './AddButton';
 import axios from 'axios';
 
-type Visitante = {
+type Visitor = {
     id: number;
     nombre: string;
-    fecha_ingreso: string;
-    fecha_salida: string;
-    apartamento: string;
-    guardia: string;
-}
+    fechaHoraEntrada: string;
+    fechaHoraSalida: string | null;
+    apartamento_id: number;
+    guardia_id: number;
+};
 
-const TableGuard = () => {
-    const [visitors, setVisitors] = useState<Visitante[]>([]);
+type Apartamento = {
+    id: number;
+    nombre: string;
+};
+
+type Guardia = {
+    id: number;
+    nombre: string;
+};
+
+const VisitantesTable = () => {
+    const [visitantes, setVisitantes] = useState<Visitor[]>([]);
+    const [apartamentos, setApartamentos] = useState<Apartamento[]>([]);
+    const [guardias, setGuardias] = useState<Guardia[]>([]);
     const [editandoId, setEditandoId] = useState<number | null>(null);
-    const [visitorEdit, setVisitorEdit] = useState<Visitante | null>(null);
+    const [visitanteEdit, setVisitanteEdit] = useState<Visitor | null>(null);
 
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/visitante/ver")
             .then((res) => {
-                const uniqueUsers = Array.from(new Map((res.data as Visitante[]).map(user => [user.id, user])).values());
-                setVisitors(uniqueUsers);
+                const uniqueVisitantes = Array.from(new Map((res.data as Visitor[]).map(visitor => [visitor.id, visitor])).values());
+                setVisitantes(uniqueVisitantes);
             })
-            .catch((err) => console.error("Error al cargar visitanteVisitantes:", err));
+            .catch((err) => console.error("Error al cargar visitantes:", err));
+        axios
+            .get("http://localhost:5000/api/apartamento/ver")
+            .then((res) => {
+                setApartamentos(res.data as Apartamento[]);
+            })
+            .catch((err) => console.error("Error al cargar apartamentos:", err));
+
+        axios
+            .get("http://localhost:5000/api/usuario/ver")
+            .then((res) => {
+                setGuardias(res.data as Guardia[]);
+            })
+            .catch((err) => console.error("Error al cargar guardias:", err));
     }, []);
 
-    const activateEdit = (usuario:Visitante) => {
-        setEditandoId(usuario.id);
-        setVisitorEdit({...usuario});
-    }
+    const getApartamentoNombre = (id: number) => {
+        const apartamento = apartamentos.find(a => a.id === id);
+        return apartamento ? apartamento.nombre : 'No asignado';
+    };
+
+    const getGuardiaNombre = (id: number) => {
+        const guardia = guardias.find(g => g.id === id);
+        return guardia ? guardia.nombre : 'No asignado';
+    };
+
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return '---';
+        return new Date(dateString).toLocaleString();
+    };
+
+    const formatDateForInput = (dateString: string | null) => {
+        if (!dateString) return '';
+        return dateString.includes('T') 
+            ? dateString.slice(0, 16) 
+            : new Date(dateString).toISOString().slice(0, 16);
+    };
+
+    const activateEdit = (visitante: Visitor) => {
+        setEditandoId(visitante.id);
+        setVisitanteEdit({...visitante});
+    };
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        if (!visitorEdit) return;
-        setVisitorEdit({ ...visitorEdit, [e.target.name]: e.target.value });
-    }
+        if (!visitanteEdit) return;
+        setVisitanteEdit({ ...visitanteEdit, [e.target.name]: e.target.value });
+    };
 
-    const editVisitor = async (id: number) => {
-        if (!visitorEdit) return;
+    const editVisitante = async (id: number) => {
+        if (!visitanteEdit) return;
 
-        console.log("Enviando datos editados:", visitorEdit);
         try {
-            const res = await axios.put(`http://localhost:5000/api/visitante/actualizar/${id}`, visitorEdit);
-            console.log("Respuesta del servidor:", res.data);
-            
+            const res = await axios.put(`http://localhost:5000/api/visitante/actualizar/${id}`, visitanteEdit);
             const updatedVisitante = res.data;
-            setVisitors(visitors.map((visitante) => visitante.id === id ? updatedVisitante : visitante));
+            setVisitantes(visitantes.map((v) => v.id === id ? updatedVisitante : v));
             
             setEditandoId(null);
-            setVisitorEdit(null);
+            setVisitanteEdit(null);
         } catch (error) {
-            console.error("Error al editar visitante", error)
-            alert("Error al editar visitante")
+            console.error("Error al editar visitante", error);
+            alert("Error al editar visitante");
         }
-    }
+    };
 
-    const addVisitor = async () => {
+    const addVisitante = async () => {
         try {
-            const newVisitor = {
+            const currentDate = new Date().toISOString();
+            const newVisitante = {
                 nombre: "Nuevo Visitante",
-                fecha_ingreso: new Date().toISOString(),
-                fecha_salida: new Date().toISOString(),
-                apartamento: 100,
-                guardia_id: 5
+                fechaHoraEntrada: currentDate,  
+                apartamento_id:  1,  
+                guardia_id: 23  
             };
-            await axios.post("http://localhost:5000/api/usuario/registrar", newVisitor);
-            const res = await axios.get("http://localhost:5000/api/usuario/ver");
-            setVisitors(res.data as Visitante[]);
+            console.log("Datos a enviar:", newVisitante);
+            await axios.post("http://localhost:5000/api/visitante/registrar", newVisitante);
+
+            const res = await axios.get("http://localhost:5000/api/visitante/ver");
+            setVisitantes(res.data as Visitor[]);
         } catch (error) {
-            console.error("Error al agregar usuario:", error);
+            console.error("Error al agregar visitante:", error);
+            alert("Error al agregar visitante");
         }
+    };
+
+    const deleteVisitante = async (id: number) => {
+            try {
+                await axios.delete(`http://localhost:5000/api/visitante/eliminar/${id}`);
+                setVisitantes(visitantes.filter(v => v.id !== id));
+            } catch (error) {
+                console.error("Error al eliminar visitante:", error);
+                alert("Error al eliminar visitante");
+            }
     };
 
     return (
         <div>
-            <div className="text-white grid grid-cols-[5rem_1fr_2fr_2fr_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
+            <div className="text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
                 <div>Id</div>
                 <div>Nombre</div>
-                <div>Fecha y Hora de Ingreso</div>
-                <div>fecha y Hora de Salida</div>
+                <div>Fecha Entrada</div>
+                <div>Fecha Salida</div>
                 <div>Apartamento</div>
-                <div></div>
                 <div>Guardia</div>
+                <div>Funciones</div>
             </div>
+            
             <div>
-            {visitors.map((visitor, index) => (
-                    <div key={visitor.id ?? `user-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
-                        <div>{visitor.id}</div>
-                        {editandoId === visitor.id && visitorEdit ? (
+                {visitantes.map((visitante, index) => (
+                    <div key={visitante.id ?? `visitante-${index}`} className='text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr_1fr_1fr] bg-black text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center'>
+                        <div>{visitante.id}</div>
+                        {editandoId === visitante.id && visitanteEdit ? (
                             <>
-                                <input type="text" name="nombre" value={visitorEdit.nombre} onChange={handleEdit} className="text-black" />
-                                <input type="datetime-local" name="fecha_ingreso" value={visitorEdit.fecha_ingreso} onChange={handleEdit} className="text-black" />
-                                <input type="datetime-local" name="fecha_salida" value={visitorEdit.fecha_salida} onChange={handleEdit} className="text-black" />
-                                <input type="text" name="apartamento" value={visitorEdit.apartamento} onChange={handleEdit} className="text-black" />
-                                <input type="text" name="guardia" value={visitorEdit.guardia} onChange={handleEdit} className="text-black" />
-                            </>
-                        ) : (
-                            <>
-                                <div>{visitor.nombre}</div>
-                                <div>{visitor.fecha_ingreso}</div>
-                                <div>{visitor.fecha_salida}</div>
-                                <div>{visitor.apartamento}</div>
-                                <div>{visitor.guardia}</div>
-                                <div>
-                                <button onClick={() => activateEdit(visitor)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                        <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
-                                    </svg>
-                                </button>
-                                <button onClick={() => editVisitor(visitor.id)}>
+                                <input type="text" name="nombre" value={visitanteEdit.nombre} onChange={handleEdit} className="text-black" />
+                                <input 
+                                    type="datetime-local" 
+                                    name="fechaEntrada" 
+                                    value={formatDateForInput(visitanteEdit.fechaHoraEntrada)} 
+                                    onChange={handleEdit} 
+                                    className="text-black" 
+                                />
+                                <input 
+                                    type="datetime-local" 
+                                    name="fechaSalida" 
+                                    value={formatDateForInput(visitanteEdit.fechaHoraSalida)} 
+                                    onChange={handleEdit} 
+                                    className="text-black" 
+                                />
+                                <select name="apartamentoId" value={visitanteEdit.apartamento_id} onChange={handleEdit} className="text-black">
+                                    {apartamentos.map(apt => (
+                                        <option key={apt.id} value={apt.id}>{apt.nombre}</option>
+                                    ))}
+                                </select>
+                                <select name="guardiaId" value={visitanteEdit.guardia_id} onChange={handleEdit} className="text-black">
+                                    {guardias.map(g => (
+                                        <option key={g.id} value={g.id}>{g.nombre}</option>
+                                    ))}
+                                </select>
+                                <button onClick={() => editVisitante(visitante.id)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
                                         <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
                                     </svg>
                                 </button>
+                            </>
+                        ) : (
+                            <>
+                                <div>{visitante.nombre}</div>
+                                <div>{formatDate(visitante.fechaHoraEntrada)}</div>
+                                <div>{formatDate(visitante.fechaHoraSalida)}</div>
+                                <div>{getApartamentoNombre(visitante.apartamento_id)}</div>
+                                <div>{getGuardiaNombre(visitante.guardia_id)}</div>
+                                <div className="flex justify-center gap-2">
+                                    <button onClick={() => deleteVisitante(visitante.id)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path className='hover:fill-red-500' fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1" />
+                                        </svg>
+                                    </button>
+                                    <button onClick={() => activateEdit(visitante)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </>
                         )}
                     </div>
                 ))}
             </div>
-            <AddButton onClick={addVisitor} />
+            <AddButton onClick={addVisitante} />
         </div>
     );
-}
-export default TableGuard;
+};
+
+export default VisitantesTable;

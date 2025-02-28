@@ -4,18 +4,18 @@ import { useEffect, useState } from "react";
 import AddButton from './AddButton';
 import axios from "axios";
 
-interface Pago {
+type Pago = {
   id: number;
   monto: string;
   tipo: string;
 }
 
-interface Apartamento {
+type Apartamento = {
   id: number;
   numero: number;
 }
 
-interface Propietario {
+type Propietario = {
   id: number;
   nombre: string;
   apellido: string;
