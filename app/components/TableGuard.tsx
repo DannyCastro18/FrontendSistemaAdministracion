@@ -152,14 +152,14 @@ const VisitantesTable = () => {
                                 <input type="text" name="nombre" value={visitanteEdit.nombre} onChange={handleEdit} className="text-black" />
                                 <input 
                                     type="datetime-local" 
-                                    name="fechaEntrada" 
+                                    name="fechaHoraEntrada" 
                                     value={formatDateForInput(visitanteEdit.fechaHoraEntrada)} 
                                     onChange={handleEdit} 
                                     className="text-black" 
                                 />
                                 <input 
                                     type="datetime-local" 
-                                    name="fechaSalida" 
+                                    name="fechaHoraSalida" 
                                     value={formatDateForInput(visitanteEdit.fechaHoraSalida)} 
                                     onChange={handleEdit} 
                                     className="text-black" 
@@ -174,10 +174,8 @@ const VisitantesTable = () => {
                                         <option key={g.id} value={g.id}>{g.nombre}</option>
                                     ))}
                                 </select>
-                                <button onClick={() => editVisitante(visitante.id)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
-                                        <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
-                                    </svg>
+                                <button onClick={() => editVisitante(visitante.id)} className="bg-green-500 h-fit w-fit m-auto px-2 py-1 rounded">
+                                    ✔
                                 </button>
                             </>
                         ) : (
