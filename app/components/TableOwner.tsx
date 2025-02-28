@@ -83,7 +83,7 @@ export default function Propietarios() {
             admin_id: 2
         };
         await axios.post("http://localhost:5000/api/propietario/registrar", newUser);
-        const res = await axios.get("http://localhost:5000/api/usuario/ver");
+        const res = await axios.get("http://localhost:5000/api/propietario/ver");
         setPropietarios(res.data as Propietario[]);
     } catch (error) {
         console.error("Error al agregar usuario:", error);
@@ -123,7 +123,7 @@ export default function Propietarios() {
               ))}
               <div>{prop.apartamentos.map((apto) => (<div key={apto.id}>#{apto.numero}</div>))}</div>
               <div>{prop.pagos.map((pago) => (<div key={pago.id}>{pago.tipo} - {pago.monto}</div>))}</div>
-              <button onClick={() => editOwner(prop.id)}>💾</button>
+              <button onClick={() => editOwner(prop.id)} className="bg-green-500 h-fit w-fit m-auto px-2 py-1 rounded">✔</button>
             </>
           ) : (
             <>
@@ -135,14 +135,14 @@ export default function Propietarios() {
               <div>{prop.pagos?.map((pago) => (<div key={pago.id}>{pago.tipo} - {pago.monto}</div>))}</div>
               <div>
                 <button onClick={() => deleteOwner(prop.id)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                            <path className='hover:fill-red-500' fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1" />
-                                        </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path className='hover:fill-red-500' fill="#fff" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1" />
+                  </svg>
                 </button>
                 <button onClick={() => activateEdit(prop)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                            <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
-                                        </svg>
+                    <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
+                  </svg>
                 </button>
               </div>
             </>

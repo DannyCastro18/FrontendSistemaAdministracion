@@ -49,6 +49,21 @@ const TablePayments = () => {
             .catch((err) => console.error("Error al actualizar pago:", err));
     };
 
+    const addPayment = async () => {
+        try {
+            const newPayment = {
+                "monto": "100000",
+                "tipo": "multa",
+                "propietario_id": 1
+              }
+            await axios.post("http://localhost:5000/api/pago/registrar", newPayment);
+            const res = await axios.get("http://localhost:5000/api/pago/obtener");
+            setPagos(res.data as Pago[]);
+        } catch (error) {
+            console.error("Error al agregar pago:", error);
+        }
+    };
+
     return (
         <div>
             <div className="text-white grid grid-cols-[5rem_1fr_1fr_1fr_1fr] bg-black uppercase text-sm font-semibold py-3 px-6 rounded-2xl m-2 text-center">
@@ -96,13 +111,17 @@ const TablePayments = () => {
                             {editId === pago.id ? (
                                 <button onClick={() => saveChanges(pago.id)} className="bg-green-500 px-2 py-1 rounded">✔</button>
                             ) : (
-                                <button onClick={() => { setEditId(pago.id); setEditedPago(pago); }} className="bg-yellow-500 px-2 py-1 rounded">Editar</button>
+                                <button onClick={() => { setEditId(pago.id); setEditedPago(pago); }} >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
+                                    </svg>
+                                </button>
                             )}
                         </div>
                     </div>
                 ))}
             </div>
-            <AddButton onClick={() => console.log("Agregar Pago")} />
+            <AddButton onClick={addPayment} />
         </div>
     );
 };

@@ -45,13 +45,27 @@ const TableProperties = () => {
     const saveChanges = () => {
         if (!editedProperty) return;
 
-        axios.put(`http://localhost:5000/api/apartamento/asignar`, editedProperty)
+        axios.put(`http://localhost:5000/api/apartamento/actualizar/${editedProperty.id}`, editedProperty)
             .then(() => {
                 setProperties(prev => prev.map((apt) => apt.id === editedProperty.id ? editedProperty : apt));
                 setEditId(null);
                 setEditedProperty(null);
             })
             .catch((err) => console.error("Error al actualizar apartamento:", err));
+    };
+
+    const addProperty = async () => {
+        try {
+            const newProperty = {
+                numero: 1,
+                propietario_id: 1,
+            };
+            await axios.post("http://localhost:5000/api/apartamento/registrar", newProperty);
+            const res = await axios.get("http://localhost:5000/api/apartamento/ver");
+            setProperties(res.data as Apartamento[]);
+        } catch (error) {
+            console.error("Error al agregar apartamento:", error);
+        }
     };
 
     return (
@@ -100,13 +114,17 @@ const TableProperties = () => {
                             {editId === property.id ? (
                                 <button onClick={saveChanges} className="bg-green-500 px-2 py-1 rounded">✔</button>
                             ) : (
-                                <button onClick={() => { setEditId(property.id); setEditedProperty({ ...property }); }} className="bg-yellow-500 px-2 py-1 rounded">Editar</button>
+                                <button onClick={() => { setEditId(property.id); setEditedProperty({ ...property }); }} >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path className='hover:fill-yellow-500' fill="#fff" d="M18.58 2.944a2 2 0 0 0-2.828 0L14.107 4.59l5.303 5.303l1.645-1.644a2 2 0 0 0 0-2.829zm-.584 8.363l-5.303-5.303l-8.835 8.835l-1.076 6.38l6.38-1.077z" />
+                                    </svg>
+                                </button>
                             )}
                         </div>
                     </div>
                 ))}
             </div>
-            <AddButton onClick={() => console.log("Agregar Propiedad")} />
+            <AddButton onClick={addProperty} />
         </div>
     );
 };
