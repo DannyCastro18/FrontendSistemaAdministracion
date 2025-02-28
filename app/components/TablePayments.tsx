@@ -54,7 +54,7 @@ const TablePayments = () => {
             const newPayment = {
                 "monto": "100000",
                 "tipo": "multa",
-                "propietario_id": 1
+                "propietario_id": 25
               }
             await axios.post("http://localhost:5000/api/pago/registrar", newPayment);
             const res = await axios.get("http://localhost:5000/api/pago/obtener");

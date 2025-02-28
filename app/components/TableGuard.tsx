@@ -15,12 +15,13 @@ type Visitor = {
 
 type Apartamento = {
     id: number;
-    nombre: string;
+    numero: number;
 };
 
 type Guardia = {
     id: number;
-    nombre: string;
+    userName: string;
+    rol: "administrador" | "guardia";
 };
 
 const VisitantesTable = () => {
@@ -42,25 +43,32 @@ const VisitantesTable = () => {
             .get("http://localhost:5000/api/apartamento/ver")
             .then((res) => {
                 setApartamentos(res.data as Apartamento[]);
+                console.log("Apartamentos:", res.data);
             })
             .catch((err) => console.error("Error al cargar apartamentos:", err));
 
         axios
             .get("http://localhost:5000/api/usuario/ver")
             .then((res) => {
-                setGuardias(res.data as Guardia[]);
+                if (Array.isArray(res.data)) {
+                    const guardiasFiltrados = res.data.filter((g: Guardia) => g.rol === "guardia");
+                    setGuardias(guardiasFiltrados);
+                } else {
+                    console.error("Error: La respuesta de la API no es un array", res.data);
+                    setGuardias([]);
+                }
             })
             .catch((err) => console.error("Error al cargar guardias:", err));
     }, []);
 
-    const getApartamentoNombre = (id: number) => {
+    const getApartamentoNumero = (id: number) => {
         const apartamento = apartamentos.find(a => a.id === id);
-        return apartamento ? apartamento.nombre : 'No asignado';
+        return apartamento ? apartamento.numero : 'No asignado';
     };
 
-    const getGuardiaNombre = (id: number) => {
-        const guardia = guardias.find(g => g.id === id);
-        return guardia ? guardia.nombre : 'No asignado';
+    const getGuardiauserName = (id: number) => {
+        const guardia1 = guardias.find(g => g.id === id );
+        return guardia1 ? guardia1.userName : "No asignado";
     };
 
     const formatDate = (dateString: string | null) => {
@@ -152,32 +160,29 @@ const VisitantesTable = () => {
                                 <input type="text" name="nombre" value={visitanteEdit.nombre} onChange={handleEdit} className="text-black" />
                                 <input 
                                     type="datetime-local" 
-                                    name="fechaEntrada" 
+                                    name="fechaHoraEntrada" 
                                     value={formatDateForInput(visitanteEdit.fechaHoraEntrada)} 
                                     onChange={handleEdit} 
                                     className="text-black" 
                                 />
                                 <input 
                                     type="datetime-local" 
-                                    name="fechaSalida" 
+                                    name="fechaHoraSalida" 
                                     value={formatDateForInput(visitanteEdit.fechaHoraSalida)} 
                                     onChange={handleEdit} 
                                     className="text-black" 
                                 />
-                                <select name="apartamentoId" value={visitanteEdit.apartamento_id} onChange={handleEdit} className="text-black">
+                                <select name="apartamento_id" value={visitanteEdit.apartamento_id} onChange={handleEdit} className="text-black">
                                     {apartamentos.map(apt => (
-                                        <option key={apt.id} value={apt.id}>{apt.nombre}</option>
+                                        <option key={apt.id} value={apt.id}>{apt.numero}</option>
                                     ))}
                                 </select>
-                                <select name="guardiaId" value={visitanteEdit.guardia_id} onChange={handleEdit} className="text-black">
+                                <select name="guardia_id" value={visitanteEdit.guardia_id} onChange={handleEdit} className="text-black">
                                     {guardias.map(g => (
-                                        <option key={g.id} value={g.id}>{g.nombre}</option>
+                                        <option key={g.id} value={g.id}>{g.userName}</option>
                                     ))}
                                 </select>
-                                <button onClick={() => editVisitante(visitante.id)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
-                                        <path className='hover:fill-green-500' fill="#fff" d="M400 48H112a64.07 64.07 0 0 0-64 64v288a64.07 64.07 0 0 0 64 64h288a64.07 64.07 0 0 0 64-64V112a64.07 64.07 0 0 0-64-64m-35.75 138.29l-134.4 160a16 16 0 0 1-12 5.71h-.27a16 16 0 0 1-11.89-5.3l-57.6-64a16 16 0 1 1 23.78-21.4l45.29 50.32l122.59-145.91a16 16 0 0 1 24.5 20.58" />
-                                    </svg>
+                                <button onClick={() => editVisitante(visitante.id)} className="bg-green-500 px-2 py-1 rounded w-fit m-auto">✔
                                 </button>
                             </>
                         ) : (
@@ -185,8 +190,8 @@ const VisitantesTable = () => {
                                 <div>{visitante.nombre}</div>
                                 <div>{formatDate(visitante.fechaHoraEntrada)}</div>
                                 <div>{formatDate(visitante.fechaHoraSalida)}</div>
-                                <div>{getApartamentoNombre(visitante.apartamento_id)}</div>
-                                <div>{getGuardiaNombre(visitante.guardia_id)}</div>
+                                <div>{getApartamentoNumero(visitante.apartamento_id)}</div>
+                                <div>{getGuardiauserName(visitante.guardia_id)}</div>
                                 <div className="flex justify-center gap-2">
                                     <button onClick={() => deleteVisitante(visitante.id)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
